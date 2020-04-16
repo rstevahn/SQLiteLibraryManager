@@ -1,0 +1,13 @@
+extends ../layout
+
+block content
+  head
+    title= book.title
+  body
+    h1 New Book
+    include bookform
+    form(method="post", action="/books")
+      p
+        input(type="submit" value="Add Book")
+      p
+        a(class="button" href="/books") Cancel
