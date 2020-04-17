@@ -1,0 +1,16 @@
+extends ../layout
+
+block content
+  head
+    title= book.title
+  body
+    h1= book.title
+    h2 by #{book.author}
+    h2 Category: #{book.genre}
+    h2 Published: #{book.year}
+    p
+      a(class="button" href="/books") Back
+    p
+      a(class="button" href="/books/" + book.id + "/edit") Edit
+    p
+      a(class="button" href="/books/" + book.id + "/delete") Delete
