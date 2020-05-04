@@ -5,6 +5,7 @@ block content
     title= book.title
   body
     h1 Update Book
+    include errors
     form(method="post", action="/books/"+book.id+"/edit")
       include bookform
       p

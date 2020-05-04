@@ -5,12 +5,7 @@ block content
     title= "New Book"
   body
     h1 New Book
-    if(errors)
-      h2.errors Oops, an error occurred!
-      ul.errors
-        each error in errors
-          li
-            =error.message
+    include errors
     form(method="post", action="/books/new")
       include bookform
       p

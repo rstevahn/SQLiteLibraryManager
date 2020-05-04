@@ -50,7 +50,7 @@ router.get('/:id', asyncHandler(async (req, res) => {
   if(book) {
     res.render('books/view-book', { book, title: book.title }); 
   } else {
-    res.sendStatus(404);
+    res.render('books/page-not-found', { id: req.params.id });
   }
 }));
 
@@ -60,13 +60,15 @@ router.get('/:id/edit', asyncHandler(async (req, res) => {
   if(book) {
     res.render('books/update-book', { book, title: book.title }); 
   } else {
-    res.sendStatus(404);
+    res.render('books/page-not-found', { id: req.params.id });
   }
 }));
 
 /* POST: the form to edit a book */
 router.post('/:id/edit', asyncHandler(async (req, res) => {
   let book;
+  console.log ("req.params.id: " + req.params.id);
+  console.log ("req.body: " + req.body);
   try {
     book = await Book.update(req.body, { where: { id: req.params.id }});
     res.redirect("/books");
@@ -74,7 +76,7 @@ router.post('/:id/edit', asyncHandler(async (req, res) => {
     console.log("POST Edit Error: ", error);
     if(error.name === "SequelizeValidationError") { // checking the error
       book = await Book.build(req.body);
-      res.render("books/new-book", { book, errors: error.errors, title: book.title });
+      res.render("books/update-book", { book, errors: error.errors, title: book.title });
     } else {
       throw error; // error caught in the asyncHandler's catch block
     }    
@@ -87,7 +89,7 @@ router.get('/:id/delete', asyncHandler(async (req, res) => {
   if(book) {
     res.render('books/delete-book', { book, title: book.title }); 
   } else {
-    res.sendStatus(404);
+    res.render('books/page-not-found', { id: req.params.id });
   }
 }));
 
@@ -98,7 +100,7 @@ router.post('/:id/delete', asyncHandler(async (req, res) => {
     await book.destroy();
     res.redirect("/books");
   } else {
-    res.sendStatus(404);
+    res.render('books/page-not-found', { id: req.params.id });
   }
 }));
 
