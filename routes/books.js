@@ -1,9 +1,18 @@
 // jshint esversion: 9
+
+// Book Routes
+
+
+// globals
+
 var express = require('express');
 var router = express.Router();
 const Book = require('../models').Book;
 
-/* Handler function to wrap each route */
+// helper functions
+
+// Async handler function to wrap each route
+
 function asyncHandler(cb){
   return async(req, res, next) => {
     try {
@@ -33,7 +42,7 @@ router.post('/new', asyncHandler(async (req, res) => {
     res.redirect("/books");
   } catch (error) {
     if(error.name === "SequelizeValidationError") { // checking the error
-      book = await Book.build(req.body);
+      book = await Book.build(req.body); // validation error, display the error
       res.render("books/new-book", { book, errors: error.errors, title: "New Book" });
     } else {
       throw error; // error caught in the asyncHandler's catch block
@@ -42,7 +51,6 @@ router.post('/new', asyncHandler(async (req, res) => {
 }));
 
 /* Important: the routes below must come after the simple named routes */
-
 
 /* GET: view an individual book */
 router.get('/:id', asyncHandler(async (req, res) => {
@@ -67,15 +75,12 @@ router.get('/:id/edit', asyncHandler(async (req, res) => {
 /* POST: the form to edit a book */
 router.post('/:id/edit', asyncHandler(async (req, res) => {
   let book;
-  console.log ("req.params.id: " + req.params.id);
-  console.log ("req.body: " + req.body);
   try {
     book = await Book.update(req.body, { where: { id: req.params.id }});
     res.redirect("/books");
   } catch (error) {
-    console.log("POST Edit Error: ", error);
     if(error.name === "SequelizeValidationError") { // checking the error
-      book = await Book.build(req.body);
+      book = await Book.build(req.body); // validation error, display the error
       res.render("books/update-book", { book, errors: error.errors, title: book.title });
     } else {
       throw error; // error caught in the asyncHandler's catch block

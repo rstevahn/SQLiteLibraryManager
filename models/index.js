@@ -1,3 +1,5 @@
+// jshint esversion: 9
+
 'use strict';
 
 const fs = require('fs');
