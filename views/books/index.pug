@@ -2,8 +2,6 @@ extends ../layout
 
 block content
   h1 Books
-  p
-    a(href="/books/new", class="button") Add Book
   table
     thead
       tr
@@ -19,3 +17,14 @@ block content
           td= book.author
           td= book.genre
           td= book.year
+  div(class="nav")
+    p
+    if pages > 2
+      a(class="button" href="/books/home") Home
+    if pages > 1
+      a(class="button" href="/books/prev") Prev
+      a(class="button" href="/books/next") Next
+    if pages > 2
+      a(class="button" href="/books/end") End
+  p
+    a(class="button" href="/books/new") Add Book

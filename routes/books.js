@@ -8,6 +8,10 @@
 var express = require('express');
 var router = express.Router();
 const Book = require('../models').Book;
+let books; // the current list of books, initialized when we first render our index
+const booksPerPage = 10; // for pagination
+let numberOfBooks = 0; // we will query for this
+let offset = 0; // for pagination
 
 // helper functions
 
@@ -25,9 +29,49 @@ function asyncHandler(cb){
 
 /* GET the table of books */
 router.get('/', asyncHandler(async (req, res) => {
-  const books = await Book.findAll({order: [['title', 'ASC']]});
-  res.render('books/index', { books, title: 'Library Manager' });
+  numberOfBooks = await Book.count();
+  books = await Book.findAll(
+                { order: [['title', 'ASC']],
+                  limit: booksPerPage,
+                  offset
+                });
+  res.render('books/index', 
+                { books, 
+                  title: 'Library Manager',
+                  pages:  Math.ceil(numberOfBooks / booksPerPage)
+                });
 }));
+
+/* GET the first page of books (Home) */
+router.get('/home', (req, res) => {
+  offset = 0;
+  res.redirect('/');
+});
+
+/* GET the previous page of books (Prev) */
+router.get('/prev', (req, res) => {
+  if (offset > 0) {
+    offset -= booksPerPage;
+  }
+  res.redirect('/');
+});
+
+/* GET the next page of books (Next) */
+router.get('/next', (req, res) => {
+  const lastOffset = Math.floor(numberOfBooks / booksPerPage) * booksPerPage;
+  if (offset < lastOffset) {
+    offset += booksPerPage;
+  }
+  res.redirect('/');
+});
+  
+/* GET the last page of books (End) */
+router.get('/end', (req, res) => {
+  const lastOffset = Math.floor(numberOfBooks / booksPerPage) * booksPerPage;
+  offset = lastOffset;
+  res.redirect('/');
+});
+
 
 /* GET a new book form */
 router.get('/new', (req, res) => {
