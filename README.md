@@ -9,9 +9,10 @@ Extra Credit features included:
 - - Author
 - - Genre
 - - Year
-- I added pagination. I display only 10 results at a time.
+- I added pagination. I display only 10 results at a time. Home, Prev, Next and End links are provided below the results when appropriate.
 
 Additional features:
 - SQL model validation of the year field to limit it to numeric values between 1000 and 2050.
+- basic CSS for the navigation elements
 
 This project uses JavaScript, Node.js, Express, Pug, and the SQL ORM Sequelize.

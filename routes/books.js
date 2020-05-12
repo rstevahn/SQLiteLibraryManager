@@ -8,10 +8,12 @@
 var express = require('express');
 var router = express.Router();
 const Book = require('../models').Book;
+const { Op } = require('sequelize');
 let books; // the current list of books, initialized when we first render our index
 const booksPerPage = 10; // for pagination
 let numberOfBooks = 0; // we will query for this
 let offset = 0; // for pagination
+let searchTerm = null; // the search POST route will set this, the index GET route will reset it
 
 // helper functions
 
@@ -29,17 +31,51 @@ function asyncHandler(cb){
 
 /* GET the table of books */
 router.get('/', asyncHandler(async (req, res) => {
-  numberOfBooks = await Book.count();
-  books = await Book.findAll(
-                { order: [['title', 'ASC']],
-                  limit: booksPerPage,
-                  offset
-                });
-  res.render('books/index', 
+  let where = {};
+  if (searchTerm) { // set up the where clause for the query
+    where = { // collation was set up in the model to be case insensitive. This will match anything containing the search term.
+      [Op.or]: [
+        {title: {
+          [Op.substring]: searchTerm
+          }
+        },
+        {author: {
+          [Op.substring]: searchTerm
+          }
+        },
+        {genre: {
+          [Op.substring]: searchTerm
+          }
+        },
+        {year: {
+          [Op.substring]: searchTerm
+          }
+        }
+      ]
+    };
+  }
+  const query = { // our query
+    order: [['title', 'ASC']], // sort by ascending book title
+    limit: booksPerPage, // pagination limit
+    offset, // start with this item
+    where // include search query if applicable (will be empty if not)
+  };
+  const results = await Book.findAndCountAll(query);
+  numberOfBooks = results.count; // total number of results
+  books = results.rows; // the results
+  if (numberOfBooks) {
+    res.render('books/index', 
                 { books, 
                   title: 'Library Manager',
-                  pages:  Math.ceil(numberOfBooks / booksPerPage)
+                  pages:  Math.ceil(numberOfBooks / booksPerPage),
+                  numberOfBooks,
+                  searchTerm
                 });
+   
+  } else {
+    res.render('books/no-results', { searchTerm });
+  }
+  searchTerm = null; // reset the search term
 }));
 
 /* GET the first page of books (Home) */
@@ -71,6 +107,13 @@ router.get('/end', (req, res) => {
   offset = lastOffset;
   res.redirect('/');
 });
+
+/* POST a new search */
+router.post('/search', asyncHandler(async (req, res) => {
+  searchTerm = req.body.search; // store the search term
+  offset = 0; // reset the offset
+  res.redirect('/'); // redirect
+}));
 
 
 /* GET a new book form */
@@ -152,8 +195,5 @@ router.post('/:id/delete', asyncHandler(async (req, res) => {
     res.render('books/page-not-found', { id: req.params.id });
   }
 }));
-
-
-
 
 module.exports = router;

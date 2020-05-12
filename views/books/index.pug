@@ -2,6 +2,8 @@ extends ../layout
 
 block content
   h1 Books
+  if searchTerm
+    h2 Displaying #{numberOfBooks} results for: #{searchTerm}
   table
     thead
       tr
@@ -17,14 +19,21 @@ block content
           td= book.author
           td= book.genre
           td= book.year
+  if !searchTerm
+    p There are #{numberOfBooks} books in your library. 
   div(class="nav")
     p
-    if pages > 2
+    if pages > 2 || searchTerm
       a(class="button" href="/books/home") Home
     if pages > 1
       a(class="button" href="/books/prev") Prev
       a(class="button" href="/books/next") Next
     if pages > 2
       a(class="button" href="/books/end") End
+  p
+  form(method="post", action="/books/search")
+    label(for="search") Search
+    input(type="text", name="search",  id="search")
+    input(type="submit", value="Search")
   p
     a(class="button" href="/books/new") Add Book

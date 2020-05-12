@@ -1,0 +1,11 @@
+extends ../layout
+
+block content
+  h2 Sorry, there are no books, authors, genres or years matching '#{searchTerm}'. Please try a different search term.
+  p
+  form(method="post", action="/books/search")
+    label(for="search") Search
+    input(type="text", name="search",  id="search")
+    input(type="submit", value="Search")
+  p
+    a(class="button" href="/books") Home

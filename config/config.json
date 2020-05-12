@@ -1,14 +1,26 @@
 {
   "development": {
     "dialect": "sqlite",
-    "storage": "dev.db"
+    "storage": "dev.db",
+    "dialectOptions": {
+      "charset": "utf8",
+      "collate": "utf8_general_ci"
+    }
   },
   "test": {
     "dialect": "sqlite",
-    "storage": "test.db"
-  },
+    "storage": "test.db",
+    "dialectOptions": {
+      "charset": "utf8",
+      "collate": "utf8_general_ci"
+    }
+},
   "production": {
     "dialect": "sqlite",
-    "storage": "library.db"
+    "storage": "library.db",
+    "dialectOptions": {
+      "charset": "utf8",
+      "collate": "utf8_general_ci"
+    }
   }
 }
